@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>雙Q大冒險日記</title>
+<meta name="description" content="一起翻開這本迎接雙胞胎的手帳，跟著線索猜猜看寶寶的性別！" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Caveat:wght@600;700&family=DotGothic16&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<audio id="bgm-audio" loop preload="auto"></audio>
+<button class="bgm-toggle" id="btn-bgm-toggle" aria-label="背景音樂開關" title="背景音樂開關">🔈</button>
+<div class="transition-veil" id="transition-veil" aria-hidden="true"></div>
+
+<main id="app">
+
+  <!-- ============ 場景 1：待機迎賓（Cover）============ -->
+  <section class="scene scene--cover" id="scene-cover">
+    <video id="cover-video" class="cover-video" autoplay muted loop playsinline aria-hidden="true">
+      <source src="assets/cover-standby.mp4" type="video/mp4" />
+    </video>
+    <div class="cover-veil" aria-hidden="true"></div>
+
+    <div class="cover-overlay">
+      <p class="washi-label" id="text-cover-eyebrow">一本正在發生的日記</p>
+      <h1 class="cover-title" id="text-cover-title">雙Q大冒險日記</h1>
+      <button class="btn-breathe" id="btn-cover-start">
+        <span id="text-cover-btn">翻開第一頁 ▶</span>
+      </button>
+    </div>
+
+    <a href="admin.html" class="admin-link" title="後台設定">⚙</a>
+
+    <!-- 暱稱輸入對話框（疊在待機畫面上）-->
+    <div class="modal-veil hidden" id="name-modal">
+      <div class="polaroid-card modal-card">
+        <p class="washi-label" id="text-name-eyebrow">在開始之前</p>
+        <h2 class="card-title" id="text-name-title">怎麼稱呼你？</h2>
+        <input class="paper-input" id="player-name" type="text" maxlength="16" placeholder="輸入你的暱稱" />
+        <button class="btn-primary" id="btn-name-next"><span id="text-name-btn">進入日記 ▶</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 場景 2：冒險劇情放映（Story Video）============ -->
+  <section class="scene hidden scene--story" id="scene-story">
+    <video id="story-video" class="story-video" muted playsinline aria-hidden="true" poster="assets/story-intro-bg.jpg"></video>
+    <button class="skip-link" id="btn-skip-story"><span id="text-skip-story-btn">略過所有影片 ▶</span></button>
+
+    <!-- 劇情開始前的像素風對話框，點一下才會開始播放 2-1～2-4 -->
+    <div class="pixel-dialog hidden" id="story-intro-dialog">
+      <div class="pixel-dialog__box">
+        <p class="pixel-dialog__text" id="text-story-intro-dialog"></p>
+        <p class="pixel-dialog__hint" id="text-story-intro-hint">（點一下開始播放）</p>
+      </div>
+    </div>
+
+    <!-- 第四段劇情播完、定格在爸爸滿頭問號畫面時的像素風對話框，點一下接續到嬰兒車環節 -->
+    <div class="pixel-dialog hidden" id="story-question-dialog">
+      <div class="pixel-dialog__box">
+        <p class="pixel-dialog__text" id="text-story-question-dialog">……所以，到底是男生還是女生？</p>
+        <p class="pixel-dialog__hint" id="text-story-question-hint">（點一下繼續）</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 場景 3：嬰兒車互動裝備（Stroller Game）============ -->
+  <section class="scene hidden scene--stroller" id="scene-stroller">
+    <video id="stroller-video" class="stroller-video" autoplay muted loop playsinline aria-hidden="true">
+      <source src="assets/stroller-bg.mp4" type="video/mp4" />
+    </video>
+    <div class="stroller-veil" aria-hidden="true"></div>
+
+    <div class="stroller-topbar">
+      <p class="washi-label" id="text-stroller-eyebrow">線索蒐集中</p>
+      <h2 class="card-title-sm" id="text-stroller-title">幫寶寶們穿戴裝備</h2>
+      <p class="card-hint-sm" id="text-stroller-hint">先點選下方配件，再點座位裝上去；點一下已裝好的座位可以卸下重選。</p>
+
+      <div class="accessory-tray" id="accessory-tray">
+        <button class="accessory-chip" id="chip-cap" data-accessory="cap">
+          <span class="accessory-icon">🧢</span>
+          <span class="accessory-name" id="text-chip-cap">藍色棒球帽</span>
+        </button>
+        <button class="accessory-chip" id="chip-bow" data-accessory="bow">
+          <span class="accessory-icon">🎀</span>
+          <span class="accessory-name" id="text-chip-bow">粉色蝴蝶結</span>
+        </button>
+      </div>
+
+      <div class="combo-banner hidden" id="combo-banner">
+        <p class="combo-banner__text" id="combo-banner__text"></p>
+      </div>
+    </div>
+
+    <button class="seat seat--onvideo" id="seat-left" data-seat="left" aria-label="左座">
+      <span class="seat-placeholder">＋</span>
+    </button>
+    <button class="seat seat--onvideo" id="seat-right" data-seat="right" aria-label="右座">
+      <span class="seat-placeholder">＋</span>
+    </button>
+
+    <!-- 最終確認與祝福對話框 -->
+    <div class="modal-veil hidden" id="confirm-modal">
+      <div class="polaroid-card modal-card">
+        <p class="washi-label" id="text-confirm-eyebrow">最終確認</p>
+        <h2 class="card-title" id="confirm-combo-title"></h2>
+        <label class="field-label" id="text-blessing-label" for="blessing-input">想留一句祝福嗎？（選填）</label>
+        <textarea class="paper-input paper-textarea" id="blessing-input" maxlength="80" placeholder="寫下你想對寶寶說的話..."></textarea>
+        <button class="btn-primary" id="btn-confirm-submit"><span id="text-confirm-btn">送出預測 ▶</span></button>
+        <button class="text-link" id="btn-confirm-cancel">再想一下</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 場景 4：五秒倒數 ============ -->
+  <section class="scene hidden scene--suspense" id="scene-suspense">
+    <p class="suspense-caption" id="text-suspense-caption">日記正在寫下最後一頁...</p>
+    <div class="suspense-number" id="suspense-number">5</div>
+  </section>
+
+  <!-- ============ 場景 5：公布結果（彩帶）============ -->
+  <section class="scene hidden scene--reveal scene--ambient" id="scene-reveal">
+    <canvas id="confetti-canvas" class="confetti-canvas" aria-hidden="true"></canvas>
+    <div class="pixel-panel" id="reveal-content"><!-- 由 script.js 動態填入 --></div>
+  </section>
+
+  <!-- ============ 場景 6：感謝參加 + 拍立得 ============ -->
+  <section class="scene hidden scene--thanks scene--ambient" id="scene-thanks">
+    <div class="pixel-panel">
+      <p class="typewriter-line" id="thanks-line-1"></p>
+      <p class="typewriter-line" id="thanks-line-2"></p>
+      <button class="btn-primary hidden" id="btn-view-results"><span id="text-view-results-btn">查看大家的預測結果 ▶</span></button>
+    </div>
+
+    <div class="corner-polaroid" id="corner-polaroid">
+      <div class="corner-polaroid__photo" id="corner-polaroid__photo"></div>
+      <p class="corner-polaroid__caption" id="text-polaroid-caption">未來一家五口，敬請期待</p>
+    </div>
+  </section>
+
+  <!-- ============ 場景 7：最終預測結果（匿名比例）============ -->
+  <section class="scene hidden scene--ambient" id="scene-results">
+    <div class="pixel-panel">
+      <p class="washi-label" id="text-results-eyebrow">大家的猜測</p>
+      <h2 class="card-title" id="text-results-title">日記最後一頁：大家都這樣猜</h2>
+      <div class="proportion-bars" id="proportion-bars"></div>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

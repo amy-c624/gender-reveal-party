@@ -1,0 +1,327 @@
+/* ============ tokens：暖色手帳 / 拍立得風格 ============ */
+:root{
+  --paper:#FBF3E5;
+  --paper-deep:#F3E6CE;
+  --ink:#4A3B2E;
+  --ink-soft:#8A7660;
+  --boy:#7FA8C9;
+  --boy-deep:#5885AA;
+  --girl:#E8A0AE;
+  --girl-deep:#D67B8D;
+  --gold:#E0A64C;
+  --gold-deep:#C98A30;
+  --sage:#9CB08C;
+  --tape:#F6D9A0;
+  --card-shadow: 0 14px 34px rgba(74,59,46,0.18);
+  --font-display:'Noto Serif TC', serif;
+  --font-body:'Noto Sans TC', sans-serif;
+  --font-script:'Caveat', cursive;
+  --font-pixel:'DotGothic16', 'Noto Sans TC', sans-serif;
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0; min-height:100vh; color:var(--ink);
+  font-family:var(--font-body); font-size:17px; font-weight:400;
+  background:var(--paper);
+  position:relative; overflow-x:hidden;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+}
+.hidden{ display:none !important; }
+
+/* ============ 場景容器（淡入淡出）============ */
+main{ position:relative; z-index:1; }
+.scene{
+  min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:40px 20px; position:relative;
+}
+
+/* ============ 場景 1：封面待機 ============ */
+.scene--cover{ padding:0; overflow:hidden; }
+.cover-video{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;
+}
+.cover-veil{
+  position:absolute; inset:0; z-index:1;
+  background: linear-gradient(180deg, rgba(74,59,46,0.15) 0%, rgba(74,59,46,0.55) 100%);
+}
+.cover-overlay{
+  position:relative; z-index:2; text-align:center; padding:0 24px;
+  display:flex; flex-direction:column; align-items:center; gap:22px;
+}
+.washi-label{
+  font-family:var(--font-script); font-weight:700; font-size:22px; color:var(--gold);
+  margin:0; transform:rotate(-2deg);
+}
+.cover-title{
+  font-family:var(--font-display); font-weight:900; color:#fff; font-size:clamp(32px,10vw,54px);
+  margin:0; line-height:1.4; text-shadow:0 3px 14px rgba(0,0,0,0.35);
+}
+
+.btn-breathe{
+  font-family:var(--font-body); font-weight:700; font-size:17px; color:#fff;
+  background:var(--gold); border:none; border-radius:100px; padding:16px 34px;
+  cursor:pointer; box-shadow:0 8px 24px rgba(224,166,76,0.5);
+  animation: breathe 2.4s ease-in-out infinite;
+  transform: translateY(var(--offset-cover-btn, 0px));
+}
+/* 只用陰影做呼吸效果，不對按鈕本身做 scale/transform 動畫，
+   避免某些手機瀏覽器判定按鈕「畫面持續變動、不夠穩定」而吃掉點擊 */
+@keyframes breathe{ 0%,100%{ box-shadow:0 8px 24px rgba(224,166,76,0.5); } 50%{ box-shadow:0 12px 34px rgba(224,166,76,0.8); } }
+
+.admin-link{
+  position:fixed; right:14px; bottom:12px; z-index:5; color:#fff;
+  opacity:0.5; text-decoration:none; font-size:18px;
+}
+.admin-link:hover{ opacity:0.9; }
+
+/* ============ 背景音樂開關（貫穿所有場景，固定在畫面上）============ */
+.bgm-toggle{
+  position:fixed; left:14px; top:14px; z-index:60;
+  width:40px; height:40px; border-radius:50%; border:none;
+  background:rgba(74,59,46,0.55); color:#fff; font-size:18px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  backdrop-filter: blur(2px);
+  transition: transform 0.12s ease, background 0.2s ease;
+}
+.bgm-toggle:hover{ transform:scale(1.06); }
+.bgm-toggle.is-muted{ background:rgba(74,59,46,0.3); opacity:0.7; }
+
+/* ============ 場景轉場：黑畫面淡出/淡入，秒數可在後台調整 ============ */
+.transition-veil{
+  position:fixed; inset:0; z-index:80; background:#000;
+  opacity:0; pointer-events:none;
+  transition: opacity var(--transition-seconds, 0.4s) ease;
+}
+.transition-veil.active{ opacity:1; }
+
+/* ============ 對話框 veil + polaroid 卡片 ============ */
+.modal-veil{
+  position:fixed; inset:0; z-index:40; display:flex; align-items:center; justify-content:center;
+  background:rgba(74,59,46,0.45); padding:20px; opacity:1; transition:opacity 0.25s ease;
+}
+.modal-veil.hidden{ display:none; }
+
+.polaroid-card{
+  width:100%; max-width:420px; background:#fff; padding:28px 24px 24px;
+  border-radius:4px; box-shadow:var(--card-shadow);
+  text-align:center; position:relative;
+  border-bottom:22px solid #fff;
+  transform:rotate(-0.6deg);
+}
+.modal-card{ transform:rotate(0.6deg); }
+.polaroid-card::before{
+  content:""; position:absolute; top:-12px; left:50%; transform:translateX(-50%) rotate(-3deg);
+  width:90px; height:26px; background:var(--tape); opacity:0.85;
+}
+
+.card-title{
+  font-family:var(--font-display); font-weight:700; font-size:clamp(19px,5.4vw,24px);
+  line-height:1.5; margin:0 0 16px; color:var(--ink);
+}
+.card-hint{ font-size:15px; color:var(--ink-soft); margin:0 0 20px; line-height:1.6; }
+
+/* ============ 表單元件 ============ */
+.paper-input{
+  font-family:var(--font-body); font-size:17px; width:100%;
+  background:var(--paper); color:var(--ink); border:2px solid var(--paper-deep); border-radius:10px;
+  padding:13px; margin-bottom:18px; text-align:center;
+}
+.paper-input:focus{ outline:none; border-color:var(--gold); }
+.paper-textarea{ min-height:80px; resize:vertical; text-align:left; font-size:15px; }
+.field-label{ display:block; text-align:left; font-size:14px; color:var(--ink-soft); margin:0 0 8px; }
+
+/* ============ 按鈕 ============ */
+.btn-primary{
+  font-family:var(--font-body); font-weight:700; font-size:16px; color:#fff;
+  background:var(--gold); border:none; border-radius:100px; padding:14px 20px; width:100%;
+  cursor:pointer; box-shadow:0 6px 16px rgba(224,166,76,0.4);
+  transition: transform 0.12s ease;
+}
+.btn-primary:hover{ filter:brightness(1.04); }
+.btn-primary:active{ transform:scale(0.98); }
+.btn-primary[disabled]{ opacity:0.4; cursor:not-allowed; }
+
+.text-link{
+  background:none; border:none; color:var(--ink-soft); font-family:var(--font-body);
+  font-size:14px; text-decoration:underline; cursor:pointer; padding:10px; margin-top:4px;
+}
+
+.skip-link{
+  position:fixed; right:16px; bottom:18px; z-index:10;
+  background:rgba(255,255,255,0.85); border:none; border-radius:100px;
+  padding:9px 16px; font-size:14px; color:var(--ink); cursor:pointer;
+}
+
+/* ============ 場景 2：劇情影片 ============ */
+.scene--story{ padding:0; overflow:hidden; background:#000; }
+.story-video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; }
+.story-veil{
+  position:absolute; inset:0; z-index:1;
+  background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.65) 100%);
+}
+.story-caption{
+  position:absolute; left:20px; right:20px; bottom:14%; z-index:2; text-align:center;
+  font-family:var(--font-display); font-weight:700; color:#fff; font-size:clamp(16px,5vw,21px);
+  line-height:1.7; text-shadow:0 2px 10px rgba(0,0,0,0.5); margin:0;
+}
+
+/* ============ 像素風對話框（RPG 文字框）：劇情開始前／第四段劇情結束後的過場說明 ============ */
+.pixel-dialog{
+  position:absolute; inset:0; z-index:5;
+  display:flex; align-items:center; justify-content:center;
+  padding:16px;
+  background:rgba(10,8,6,0.45);
+  cursor:pointer;
+}
+.pixel-dialog.hidden{ display:none; }
+.pixel-dialog__box{
+  width:100%; max-width:480px;
+  background:rgba(20,14,8,0.85); border:2px solid rgba(255,255,255,0.55); border-radius:6px;
+  box-shadow:0 0 0 4px rgba(0,0,0,0.25), 0 14px 34px rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  padding:20px 20px 16px;
+}
+.pixel-dialog__text{
+  font-family:var(--font-pixel); font-weight:400; font-size:16px; line-height:1.9; color:#fff; margin:0 0 10px;
+}
+.pixel-dialog__hint{
+  font-family:var(--font-pixel); font-weight:400; font-size:12px; color:rgba(255,255,255,0.7); margin:0; text-align:right;
+  animation: pixel-dialog-blink 1.2s ease-in-out infinite;
+}
+@keyframes pixel-dialog-blink{ 0%,100%{ opacity:0.4; } 50%{ opacity:1; } }
+
+/* ============ 場景 3：嬰兒車互動（滿版影片背景 + 可疊在畫面上的座位點）============ */
+.scene--stroller{ padding:0; overflow:hidden; }
+.stroller-video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; }
+.stroller-veil{
+  position:absolute; inset:0; z-index:1;
+  background: linear-gradient(180deg, rgba(20,14,8,0.55) 0%, transparent 30%, transparent 100%);
+}
+
+/* 座位點：直接疊在影片上對應嬰兒車座位的位置，位置可在後台以百分比調整 */
+.seat{
+  position:absolute; z-index:2;
+  top: var(--seat-top, 55%); left: var(--seat-left, 38%);
+  transform: translate(-50%, -50%);
+  width:56px; height:56px; border-radius:50%;
+  background:rgba(255,253,248,0.22); border:3px solid rgba(255,255,255,0.85);
+  backdrop-filter: blur(1px);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:24px;
+  transition: transform 0.15s ease, background 0.2s ease;
+  box-shadow:0 2px 10px rgba(0,0,0,0.25);
+}
+#seat-left{ --seat-top: var(--seat-left-top, 55%); --seat-left: var(--seat-left-left, 38%); }
+#seat-right{ --seat-top: var(--seat-right-top, 55%); --seat-left: var(--seat-right-left, 62%); }
+.seat:hover{ transform:translate(-50%, -50%) scale(1.06); }
+.seat-placeholder{ color:#fff; font-size:22px; text-shadow:0 1px 4px rgba(0,0,0,0.4); }
+.seat.filled{ background:rgba(255,253,248,0.9); }
+.seat.selectable-target{ animation:seat-pulse 1s ease-in-out infinite; border-color:var(--gold); }
+@keyframes seat-pulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(224,166,76,0.6); } 50%{ box-shadow:0 0 0 10px rgba(224,166,76,0); } }
+
+/* 頂部半透明面板：放標題、提示、配件與組合結果，留出畫面中下段讓影片裡的座位可以直接點擊 */
+.stroller-topbar{
+  position:absolute; top:0; left:0; right:0; z-index:3;
+  background: linear-gradient(180deg, rgba(20,14,8,0.88) 0%, rgba(20,14,8,0.6) 75%, transparent 100%);
+  padding: max(16px, env(safe-area-inset-top)) 18px 20px;
+  text-align:center;
+}
+.card-title-sm{ font-family:var(--font-pixel); font-weight:400; font-size:18px; margin:0 0 6px; color:#fff; }
+.card-hint-sm{ font-family:var(--font-pixel); font-size:12px; color:rgba(255,255,255,0.82); margin:0 0 14px; line-height:1.7; }
+.stroller-topbar .washi-label{ color:var(--gold); font-family:var(--font-pixel); font-size:13px; transform:none; }
+
+.accessory-tray{ display:flex; gap:12px; justify-content:center; margin-bottom:10px; flex-wrap:wrap; }
+.accessory-chip{
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  background:rgba(255,255,255,0.12); border:3px solid transparent; border-radius:14px;
+  padding:9px 16px; cursor:pointer; font-family:var(--font-pixel); font-weight:400; font-size:12px; color:#fff;
+  transition: transform 0.12s ease, background 0.2s ease;
+}
+.accessory-chip:hover{ transform:translateY(-2px); }
+.accessory-chip.selected{ border-color:var(--gold); background:rgba(255,255,255,0.28); }
+.accessory-chip.used{ opacity:0.35; cursor:not-allowed; }
+.accessory-icon{ font-size:26px; }
+
+.combo-banner{
+  background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.25);
+  border-radius:12px; padding:14px; margin-top:6px;
+  animation: combo-pop 0.3s ease;
+}
+@keyframes combo-pop{ from{ transform:scale(0.9); opacity:0; } to{ transform:scale(1); opacity:1; } }
+.combo-banner__text{ margin:0; font-family:var(--font-pixel); font-weight:400; font-size:16px; color:#fff; }
+
+/* ============ 場景 4：五秒倒數 ============ */
+.suspense-number{
+  font-family:var(--font-pixel); font-weight:400; font-size:min(30vw,150px); color:var(--gold);
+  text-shadow:0 0 18px rgba(224,166,76,0.6);
+  animation: suspense-pop 1s ease-in-out infinite;
+}
+@keyframes suspense-pop{ 0%{ transform:scale(1); } 30%{ transform:scale(1.15); } 100%{ transform:scale(1); } }
+
+/* ============ 場景 4/5/6/7 共用：夜燈客廳氛圍底圖（用待機影片的模糊截圖），配合像素風文字 ============ */
+.scene--ambient{
+  background-image:
+    linear-gradient(180deg, rgba(20,14,8,0.62) 0%, rgba(20,14,8,0.85) 100%),
+    url('assets/ambient-bg.jpg');
+  background-size:cover; background-position:center;
+}
+.scene--suspense{ background: linear-gradient(180deg, var(--ink) 0%, #2E2115 100%); }
+.suspense-caption{ font-family:var(--font-pixel); color:#fff; font-size:15px; margin:0 0 18px; opacity:0.85; }
+
+/* 像素遊戲風面板：取代白色拍立得卡片，用在公布/感謝/結果三個場景 */
+.pixel-panel{
+  width:100%; max-width:420px; background:rgba(255,255,255,0.08);
+  border:2px solid rgba(255,255,255,0.35); border-radius:6px;
+  box-shadow:0 0 0 4px rgba(0,0,0,0.25), 0 14px 34px rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  padding:28px 22px; text-align:center; color:#fff;
+}
+.pixel-panel .washi-label{ font-family:var(--font-pixel); color:var(--gold); font-size:14px; transform:none; }
+.pixel-panel .card-title{ font-family:var(--font-pixel); color:#fff; font-weight:400; }
+
+/* ============ 場景 5：公布結果 ============ */
+.scene--reveal{ position:relative; }
+.confetti-canvas{ position:fixed; inset:0; z-index:30; pointer-events:none; width:100%; height:100%; }
+.reveal-emoji{ font-size:52px; margin-bottom:12px; }
+.reveal-name{ font-family:var(--font-pixel); font-weight:400; font-size:24px; color:var(--gold); margin:0 0 14px; line-height:1.6; }
+.reveal-note{ color:rgba(255,255,255,0.82); font-size:15px; line-height:1.7; margin:0 0 20px; }
+
+/* ============ 場景 6：感謝 + 拍立得 ============ */
+.scene--thanks{ gap:30px; }
+.typewriter-line{
+  font-family:var(--font-pixel); font-size:16px; line-height:2; min-height:2em; margin:0 0 6px; color:#fff;
+  white-space:pre-wrap; word-break:break-word;
+}
+.typewriter-line::after{ content:"｜"; animation: blink 0.9s steps(2) infinite; margin-left:2px; color:var(--gold); }
+.typewriter-line.done::after{ content:""; }
+@keyframes blink{ 0%,100%{ opacity:1; } 50%{ opacity:0.2; } }
+
+.corner-polaroid{
+  width:150px; background:#fff; padding:8px 8px 22px; box-shadow:var(--card-shadow);
+  transform:rotate(3deg); margin-top:4px;
+}
+.corner-polaroid__photo{
+  width:100%; aspect-ratio:1/1; background:
+    linear-gradient(135deg, var(--boy) 0%, var(--girl) 100%);
+  background-size:cover; background-position:center;
+  display:flex; align-items:center; justify-content:center; font-size:30px; color:#fff;
+}
+.corner-polaroid__photo::before{ content:"👨‍👩‍👧‍👦"; }
+.corner-polaroid__photo[style*="background-image"]::before{ content:""; }
+.corner-polaroid__caption{ font-family:var(--font-script); font-weight:700; font-size:15px; text-align:center; margin:8px 0 0; color:#fff; text-shadow:0 1px 4px rgba(0,0,0,0.4); }
+
+/* ============ 場景 7：匿名比例結果 ============ */
+.proportion-bars{ display:flex; flex-direction:column; gap:18px; margin-top:8px; }
+.proportion-row__label{ display:flex; justify-content:space-between; font-family:var(--font-pixel); font-weight:400; font-size:14px; margin-bottom:8px; color:#fff; }
+.proportion-row__track{ background:rgba(255,255,255,0.15); border-radius:100px; height:20px; overflow:hidden; }
+.proportion-row__fill{ height:100%; border-radius:100px; transition:width 0.6s ease; }
+
+/* ============ RWD ============ */
+@media (max-width:360px){
+  .polaroid-card{ padding:24px 18px 20px; }
+  .seat{ width:48px; height:48px; }
+}
