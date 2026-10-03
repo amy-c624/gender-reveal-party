@@ -221,7 +221,7 @@ bgmToggleBtn.addEventListener("click", () => {
 /* ---------- 4. 場景切換（淡入淡出）---------- */
 const transitionVeil = document.getElementById("transition-veil");
 
-function switchScene(id) {
+function switchScene(id, onShown) {
   const next = document.getElementById(id);
   const transitionMs = Math.round((LAYOUT_POSITIONS.transitionSeconds ?? 0.4) * 1000);
 
@@ -237,6 +237,10 @@ function switchScene(id) {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => { transitionVeil.classList.remove("active"); });
     });
+    // 場景這時候才是真的「顯示出來、有實際畫面尺寸」的狀態，
+    // 需要量測畫面大小的後續動作（例如公布結果時的彩帶畫布）要等到這裡才能做，
+    // 不然畫面可能還沒真的顯示、量到的尺寸是 0，導致彩帶整個噴不出來
+    if (typeof onShown === "function") onShown();
   }, transitionMs);
 }
 
@@ -472,8 +476,7 @@ function runSuspenseCountdown() {
     n -= 1;
     if (n <= 0) {
       clearInterval(timer);
-      switchScene("scene-reveal");
-      loadReveal();
+      switchScene("scene-reveal", loadReveal);
       return;
     }
     numEl.textContent = String(n);
@@ -532,8 +535,11 @@ function fireConfetti(colors) {
   // 手動把畫布的實際繪圖解析度對齊到畫面上顯示的大小，
   // 避免畫布內部解析度跟 CSS 顯示尺寸對不上，導致綵帶畫在很小一塊看不見的範圍裡
   const rect = canvasEl.getBoundingClientRect();
-  canvasEl.width = rect.width;
-  canvasEl.height = rect.height;
+  const frameEl = document.getElementById("phone-frame");
+  // 保險：萬一畫布當下量到的尺寸是 0（例如畫面還沒真的顯示出來），
+  // 退回用外框或整個視窗的尺寸，確保綵帶無論如何都有合理大小的範圍可以噴
+  canvasEl.width = rect.width || (frameEl ? frameEl.clientWidth : window.innerWidth);
+  canvasEl.height = rect.height || (frameEl ? frameEl.clientHeight : window.innerHeight);
   const myConfetti = confetti.create(canvasEl, { resize: true, useWorker: true });
   const duration = 2600;
   const end = Date.now() + duration;
