@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Caveat:wght@600;700&family=DotGothic16&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="style.css?v=22" />
+<link rel="stylesheet" href="style.css?v=24" />
 </head>
 <body class="has-frame">
 
@@ -107,6 +107,9 @@
       <span class="seat-placeholder">＋</span>
     </button>
 
+    <!-- 兩個座位都選好後才出現，按下去才會跳出最終確認對話框 -->
+    <button class="btn-primary stroller-confirm hidden" id="btn-stroller-confirm"><span id="text-stroller-confirm-btn">確認選擇 ▶</span></button>
+
     <!-- 最終確認與祝福對話框 -->
     <div class="modal-veil hidden" id="confirm-modal">
       <div class="polaroid-card modal-card">
@@ -163,6 +166,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
-<script src="script.js?v=22"></script>
+<script src="script.js?v=24"></script>
 </body>
 </html>

@@ -34,6 +34,7 @@ let UI_TEXT = {
   strollerHint: "點一下配件，就會自動裝到嬰兒車的座位上；想換的話，點一下已裝好的座位就能卸下重選。",
   chipCap: "藍色棒球帽",
   chipBow: "粉色蝴蝶結",
+  strollerConfirmBtn: "確認選擇 ▶",
   confirmEyebrow: "最終確認",
   confirmTemplate: "你猜這是「{name}」？",
   blessingLabel: "想留一句祝福嗎？（選填）",
@@ -153,6 +154,7 @@ function applyUiText() {
   setText("text-stroller-hint", UI_TEXT.strollerHint);
   setText("text-chip-cap", UI_TEXT.chipCap);
   setText("text-chip-bow", UI_TEXT.chipBow);
+  setText("text-stroller-confirm-btn", UI_TEXT.strollerConfirmBtn);
   setText("text-confirm-eyebrow", UI_TEXT.confirmEyebrow);
   setText("text-blessing-label", UI_TEXT.blessingLabel);
   setText("text-confirm-btn", UI_TEXT.confirmBtn);
@@ -362,6 +364,8 @@ const chipBow = document.getElementById("chip-bow");
 const comboBanner = document.getElementById("combo-banner");
 const comboBannerText = document.getElementById("combo-banner__text");
 const confirmModal = document.getElementById("confirm-modal");
+const strollerConfirmBtn = document.getElementById("btn-stroller-confirm");
+strollerConfirmBtn.addEventListener("click", () => { if (comboResult) openConfirmModal(); });
 
 const ACCESSORY_ICON = { cap: "🧢", bow: "🎀" };
 
@@ -399,6 +403,7 @@ function handleSeatClick(seatEl) {
   // 已裝好：點一下卸下
   seatAssignments[seatKey] = null;
   renderSeat(seatEl);
+  strollerConfirmBtn.classList.add("hidden");
   comboBanner.classList.add("hidden");
   updateSeatHighlights();
 }
@@ -417,8 +422,8 @@ function checkComboComplete() {
   const opt = COMBO_OPTIONS.find((o) => o.value === comboResult);
   comboBannerText.textContent = `${opt.emoji} ${opt.name}`;
   comboBanner.classList.remove("hidden");
-
-  setTimeout(() => openConfirmModal(), 500);
+  // 選完兩個配件後不再自動跳出對話框，要玩家按「確認選擇」才會跳出
+  strollerConfirmBtn.classList.remove("hidden");
 }
 
 function openConfirmModal() {
@@ -437,6 +442,7 @@ document.getElementById("btn-confirm-cancel").addEventListener("click", () => {
   renderSeat(seatLeft);
   renderSeat(seatRight);
   [chipCap, chipBow].forEach((chip) => chip.classList.remove("selected"));
+  strollerConfirmBtn.classList.add("hidden");
   comboBanner.classList.add("hidden");
   updateSeatHighlights();
 });
@@ -630,6 +636,7 @@ document.getElementById("btn-restart").addEventListener("click", () => {
   renderSeat(seatLeft);
   renderSeat(seatRight);
   [chipCap, chipBow].forEach((chip) => chip.classList.remove("selected"));
+  strollerConfirmBtn.classList.add("hidden");
   comboBanner.classList.add("hidden");
   updateSeatHighlights();
 

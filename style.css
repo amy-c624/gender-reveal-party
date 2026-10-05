@@ -365,3 +365,7 @@ html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
   .polaroid-card{ padding:24px 18px 20px; }
   .seat{ width:48px; height:48px; }
 }
+
+/* 嬰兒車頁：選完兩個座位後的確認按鈕，固定在畫面下方中間，方便單手點 */
+.stroller-confirm{ position:absolute; left:50%; bottom:max(36px, env(safe-area-inset-bottom)); transform:translateX(-50%); z-index:4; width:min(80%, 320px); margin:0; }
+.stroller-confirm.hidden{ display:none; }
