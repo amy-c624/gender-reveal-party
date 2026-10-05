@@ -91,39 +91,47 @@ const localScores = { BB: 0, GG: 0, BG: 0 };
 const localGuesses = [];
 
 /* ---------- 3. 讀取後台設定 ---------- */
+// 封面文字在「後台設定讀完」之前先隱藏（#phone-frame.config-loading），避免玩家先看到預設文案再跳成後台改過的文案
+const phoneFrameForConfig = document.getElementById("phone-frame");
+let configRevealed = false;
+function revealAfterConfig() {
+  if (configRevealed) return;
+  configRevealed = true;
+  if (phoneFrameForConfig) phoneFrameForConfig.classList.remove("config-loading");
+}
+// 網路太慢或 Firebase 讀不到時，最多等 3 秒就先顯示（用預設文案），不會一直卡住
+setTimeout(revealAfterConfig, 3000);
+
 async function loadRemoteConfig() {
-  if (!firebaseReady) { applyUiText(); return; }
+  if (!firebaseReady) { applyUiText(); revealAfterConfig(); return; }
 
-  try {
-    const cDoc = await db.collection("config").doc("comboOptions").get();
-    if (cDoc.exists && Array.isArray(cDoc.data().list) && cDoc.data().list.length === 3) {
-      COMBO_OPTIONS = COMBO_OPTIONS.map((defaultOpt) => {
-        const override = cDoc.data().list.find((o) => o.value === defaultOpt.value);
-        return override ? { ...defaultOpt, name: override.name } : defaultOpt;
-      });
-    }
-  } catch (err) { console.error("讀取組合名稱設定失敗：", err); }
+  const fetchDoc = (name) =>
+    db.collection("config").doc(name).get().catch((err) => {
+      console.error("讀取後台設定失敗（" + name + "）：", err);
+      return null;
+    });
 
-  try {
-    const uDoc = await db.collection("config").doc("uiText").get();
-    if (uDoc.exists) UI_TEXT = { ...UI_TEXT, ...uDoc.data() };
-  } catch (err) { console.error("讀取文字設定失敗：", err); }
+  // 四份設定同時讀取（原本是一份讀完才讀下一份，會慢 4 倍）
+  const [cDoc, uDoc, vDoc, lDoc] = await Promise.all([
+    fetchDoc("comboOptions"), fetchDoc("uiText"), fetchDoc("visualAssets"), fetchDoc("layoutPositions")
+  ]);
 
-  try {
-    const vDoc = await db.collection("config").doc("visualAssets").get();
-    if (vDoc.exists) VISUAL_ASSETS = { ...VISUAL_ASSETS, ...vDoc.data() };
-  } catch (err) { console.error("讀取視覺素材設定失敗：", err); }
-
-  try {
-    const lDoc = await db.collection("config").doc("layoutPositions").get();
-    if (lDoc.exists) LAYOUT_POSITIONS = { ...LAYOUT_POSITIONS, ...lDoc.data() };
-  } catch (err) { console.error("讀取版面位置設定失敗：", err); }
+  if (cDoc && cDoc.exists && Array.isArray(cDoc.data().list) && cDoc.data().list.length === 3) {
+    COMBO_OPTIONS = COMBO_OPTIONS.map((defaultOpt) => {
+      const override = cDoc.data().list.find((o) => o.value === defaultOpt.value);
+      return override ? { ...defaultOpt, name: override.name } : defaultOpt;
+    });
+  }
+  if (uDoc && uDoc.exists) UI_TEXT = { ...UI_TEXT, ...uDoc.data() };
+  if (vDoc && vDoc.exists) VISUAL_ASSETS = { ...VISUAL_ASSETS, ...vDoc.data() };
+  if (lDoc && lDoc.exists) LAYOUT_POSITIONS = { ...LAYOUT_POSITIONS, ...lDoc.data() };
 
   applyUiText();
   applyVisualAssets();
   applyLayoutPositions();
+  revealAfterConfig();
 }
-loadRemoteConfig().catch((err) => console.error("loadRemoteConfig 發生未預期錯誤：", err));
+loadRemoteConfig().catch((err) => { console.error("loadRemoteConfig 發生未預期錯誤：", err); revealAfterConfig(); });
 
 /* ---------- 3b. 套用文字設定到畫面上 ---------- */
 function setText(id, text) { const el = document.getElementById(id); if (el && text != null) el.textContent = text; }
