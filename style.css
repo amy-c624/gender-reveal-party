@@ -163,7 +163,12 @@ main{ position:relative; z-index:1; height:100%; }
   padding:13px; margin-bottom:18px; text-align:center;
 }
 .paper-input:focus{ outline:none; border-color:var(--gold); }
-.paper-textarea{ min-height:80px; resize:vertical; text-align:left; font-size:15px; }
+/* iOS Safari 對 font-size 小於 16px 的輸入框，聚焦時會自動放大整個頁面且不會縮回來，所以輸入框一律 16px 以上 */
+.paper-textarea{ min-height:80px; resize:vertical; text-align:left; font-size:16px; }
+.paper-input{ font-size:max(16px, 17px); }
+#phone-frame.config-loading .cover-overlay{ opacity:0; }
+.cover-overlay{ transition:opacity 0.25s ease; }
+html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 .field-label{ display:block; text-align:left; font-size:14px; color:var(--ink-soft); margin:0 0 8px; }
 
 /* ============ 按鈕 ============ */
