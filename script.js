@@ -65,6 +65,7 @@ let VISUAL_ASSETS = { polaroidUrl: "", bgmUrl: "assets/bgm.mp3" };
 let LAYOUT_POSITIONS = {
   coverBtnOffset: 0,
   coverTitleOffsetX: 0, coverTitleOffsetY: 0,
+  storyVideoPosX: 50,
   seatLeftTop: 57, seatLeftLeft: 40,
   seatRightTop: 57, seatRightLeft: 66,
   transitionSeconds: 0.4
@@ -191,6 +192,7 @@ function applyLayoutPositions() {
   root.setProperty("--offset-cover-btn", `${LAYOUT_POSITIONS.coverBtnOffset || 0}px`);
   root.setProperty("--offset-title-x", `${LAYOUT_POSITIONS.coverTitleOffsetX || 0}px`);
   root.setProperty("--offset-title-y", `${LAYOUT_POSITIONS.coverTitleOffsetY || 0}px`);
+  root.setProperty("--story-video-pos-x", `${LAYOUT_POSITIONS.storyVideoPosX ?? 50}%`);
   root.setProperty("--seat-left-top", `${LAYOUT_POSITIONS.seatLeftTop}%`);
   root.setProperty("--seat-left-left", `${LAYOUT_POSITIONS.seatLeftLeft}%`);
   root.setProperty("--seat-right-top", `${LAYOUT_POSITIONS.seatRightTop}%`);

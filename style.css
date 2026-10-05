@@ -21,6 +21,8 @@
 
 *{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; }
+/* 遊戲頁面固定滿版、不可上下滑動（避免 iPhone Safari 拖動時整頁彈跳／捲動）。後台 admin.html 沒有 has-frame，不受影響 */
+html:has(body.has-frame){ overflow:hidden; height:100%; overscroll-behavior:none; }
 body{
   margin:0; min-height:100vh; color:var(--ink);
   font-family:var(--font-body); font-size:17px; font-weight:400;
@@ -34,7 +36,8 @@ body{
    transform 讓內部所有 position:fixed 的元素（音樂鍵、轉場黑幕、對話框、彩帶）
    都相對這個外框定位，而不是整個瀏覽器視窗，桌機上才不會跑版。 */
 body.has-frame{
-  height:100%;
+  position:fixed; inset:0; width:100%; height:100%;
+  overflow:hidden; overscroll-behavior:none;
   background:#15110c;
   display:flex; align-items:center; justify-content:center;
 }
@@ -44,8 +47,8 @@ body.has-frame{
   height:100vh; height:100dvh;
   margin:0 auto;
   background:var(--paper);
-  overflow-y:auto; overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
+  overflow:hidden;
+  overscroll-behavior:none;
   transform: translateZ(0);
 }
 @media (min-width:701px){
@@ -189,7 +192,7 @@ html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 
 /* ============ 場景 2：劇情影片（字幕/轉場都已經燒進 Amy 剪好的影片裡）============ */
 .scene--story{ padding:0; overflow:hidden; background:#000; }
-.story-video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; }
+.story-video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:var(--story-video-pos-x, 50%) 50%; z-index:0; }
 
 /* 暫停鍵／略過鍵：因為字幕燒在影片下方，這兩顆跟音樂鍵一起集中放在右上角，
    避免跟畫面下方字幕打架。樣式跟左上角的音樂鍵保持一致（圓形半透明圖示按鈕）。 */

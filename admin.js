@@ -94,6 +94,7 @@ const DEFAULT_VISUAL_ASSETS = { polaroidUrl: "", bgmUrl: "assets/bgm.mp3" };
 const DEFAULT_LAYOUT_POSITIONS = {
   coverBtnOffset: 0,
   coverTitleOffsetX: 0, coverTitleOffsetY: 0,
+  storyVideoPosX: 50,
   seatLeftTop: 57, seatLeftLeft: 40,
   seatRightTop: 57, seatRightLeft: 66,
   transitionSeconds: 0.4
@@ -366,6 +367,7 @@ function renderLayoutPositionsEditor() {
   document.getElementById("layout-cover-btn").value = currentLayoutPositions.coverBtnOffset || 0;
   document.getElementById("layout-title-offset-x").value = currentLayoutPositions.coverTitleOffsetX || 0;
   document.getElementById("layout-title-offset-y").value = currentLayoutPositions.coverTitleOffsetY || 0;
+  document.getElementById("layout-story-video-pos-x").value = currentLayoutPositions.storyVideoPosX ?? 50;
   document.getElementById("layout-seat-left-top").value = currentLayoutPositions.seatLeftTop;
   document.getElementById("layout-seat-left-left").value = currentLayoutPositions.seatLeftLeft;
   document.getElementById("layout-seat-right-top").value = currentLayoutPositions.seatRightTop;
@@ -379,6 +381,7 @@ document.getElementById("btn-save-layout").addEventListener("click", async () =>
     coverBtnOffset: Number(document.getElementById("layout-cover-btn").value) || 0,
     coverTitleOffsetX: Number(document.getElementById("layout-title-offset-x").value) || 0,
     coverTitleOffsetY: Number(document.getElementById("layout-title-offset-y").value) || 0,
+    storyVideoPosX: (() => { const v = parseFloat(document.getElementById("layout-story-video-pos-x").value); return Number.isFinite(v) ? Math.min(100, Math.max(0, v)) : 50; })(),
     seatLeftTop: Number(document.getElementById("layout-seat-left-top").value),
     seatLeftLeft: Number(document.getElementById("layout-seat-left-left").value),
     seatRightTop: Number(document.getElementById("layout-seat-right-top").value),
