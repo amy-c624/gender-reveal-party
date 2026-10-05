@@ -26,7 +26,7 @@ const DEFAULT_UI_TEXT = {
   storyQuestionHint: "（點一下繼續）",
   strollerEyebrow: "線索蒐集中",
   strollerTitle: "幫寶寶們穿戴裝備",
-  strollerHint: "先點選下方配件，再點座位裝上去；點一下已裝好的座位可以卸下重選。",
+  strollerHint: "點一下配件，就會自動裝到嬰兒車的座位上；想換的話，點一下已裝好的座位就能卸下重選。",
   chipCap: "藍色棒球帽",
   chipBow: "粉色蝴蝶結",
   confirmEyebrow: "最終確認",
@@ -135,8 +135,74 @@ function enterAdmin() {
   if (!firebaseReady) {
     alert("尚未設定 Firebase，後台的變更不會同步給訪客，請先參考 README.md 設定。");
   }
-  loadExistingConfig();
+  loadExistingConfig().finally(loadGuesses);
 }
+
+/* ---------- 祝福牆：列出所有人的暱稱、猜測、祝福 ---------- */
+async function loadGuesses() {
+  const status = document.getElementById("guesses-status");
+  const listEl = document.getElementById("guess-list");
+  const summaryEl = document.getElementById("guess-summary");
+  if (!firebaseReady) { status.textContent = "尚未設定 Firebase，無法讀取。"; return; }
+  status.textContent = "讀取中...";
+  try {
+    const snap = await db.collection("guesses").orderBy("createdAt", "desc").limit(300).get();
+    const comboName = (v) => {
+      const opt = currentComboOptions.find((o) => o.value === v);
+      return opt ? `${opt.emoji} ${opt.name}` : (v || "?");
+    };
+    const counts = {};
+    listEl.textContent = "";
+    summaryEl.textContent = "";
+    snap.forEach((doc) => {
+      const d = doc.data();
+      counts[d.combo] = (counts[d.combo] || 0) + 1;
+
+      const item = document.createElement("div");
+      item.style.cssText = "border-top:1px solid var(--paper-deep); padding:12px 0;";
+
+      const head = document.createElement("div");
+      head.style.cssText = "display:flex; justify-content:space-between; gap:8px; font-weight:700; font-size:15px;";
+      const nameEl = document.createElement("span");
+      nameEl.textContent = d.name || "（沒填暱稱）";
+      const guessEl = document.createElement("span");
+      guessEl.style.color = "var(--gold-deep)";
+      guessEl.textContent = comboName(d.combo);
+      head.append(nameEl, guessEl);
+      item.appendChild(head);
+
+      const msg = document.createElement("p");
+      msg.style.cssText = "margin:6px 0 0; font-size:15px; line-height:1.6; white-space:pre-wrap; word-break:break-word;";
+      msg.textContent = d.blessing ? d.blessing : "（沒有留祝福）";
+      if (!d.blessing) msg.style.color = "var(--ink-soft)";
+      item.appendChild(msg);
+
+      if (d.createdAt && d.createdAt.toDate) {
+        const t = document.createElement("p");
+        t.style.cssText = "margin:4px 0 0; font-size:12px; color:var(--ink-soft);";
+        t.textContent = d.createdAt.toDate().toLocaleString("zh-TW");
+        item.appendChild(t);
+      }
+      listEl.appendChild(item);
+    });
+
+    const total = snap.size;
+    const mkBadge = (text) => {
+      const b = document.createElement("span");
+      b.className = "value-badge";
+      b.style.cssText = "background:var(--paper); border-radius:100px; padding:6px 12px; margin:0;";
+      b.textContent = text;
+      return b;
+    };
+    summaryEl.appendChild(mkBadge(`共 ${total} 人`));
+    ["BB", "BG", "GG"].forEach((v) => summaryEl.appendChild(mkBadge(`${comboName(v)}：${counts[v] || 0}`)));
+    status.textContent = total ? "" : "還沒有人送出預測。";
+  } catch (err) {
+    console.error(err);
+    status.textContent = "讀取失敗：" + err.message;
+  }
+}
+document.getElementById("btn-refresh-guesses").addEventListener("click", loadGuesses);
 
 /* ---------- 讀取現有設定 ---------- */
 async function loadExistingConfig() {

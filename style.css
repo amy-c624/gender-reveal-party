@@ -268,8 +268,8 @@ html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
   padding: max(16px, env(safe-area-inset-top)) 18px 20px;
   text-align:center;
 }
-.card-title-sm{ font-family:var(--font-pixel); font-weight:400; font-size:18px; margin:0 0 6px; color:#fff; }
-.card-hint-sm{ font-family:var(--font-pixel); font-size:12px; color:rgba(255,255,255,0.82); margin:0 0 14px; line-height:1.7; }
+.card-title-sm{ font-family:var(--font-pixel); font-weight:400; font-size:20px; margin:0 0 6px; color:#fff; }
+.card-hint-sm{ font-family:var(--font-pixel); font-size:15px; color:rgba(255,255,255,0.82); margin:0 0 14px; line-height:1.7; }
 .stroller-topbar .washi-label{ color:var(--gold); font-family:var(--font-pixel); font-size:13px; transform:none; }
 
 .accessory-tray{ display:flex; gap:12px; justify-content:center; margin-bottom:10px; flex-wrap:wrap; }

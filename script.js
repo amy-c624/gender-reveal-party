@@ -31,7 +31,7 @@ let UI_TEXT = {
   storyQuestionHint: "（點一下繼續）",
   strollerEyebrow: "線索蒐集中",
   strollerTitle: "幫寶寶們穿戴裝備",
-  strollerHint: "先點選下方配件，再點座位裝上去；點一下已裝好的座位可以卸下重選。",
+  strollerHint: "點一下配件，就會自動裝到嬰兒車的座位上；想換的話，點一下已裝好的座位就能卸下重選。",
   chipCap: "藍色棒球帽",
   chipBow: "粉色蝴蝶結",
   confirmEyebrow: "最終確認",
@@ -384,30 +384,23 @@ function renderSeat(seatEl) {
 }
 
 function handleChipClick(type) {
-  selectedAccessory = selectedAccessory === type ? null : type;
-  [chipCap, chipBow].forEach((chip) => chip.classList.remove("selected"));
-  if (selectedAccessory === "cap") chipCap.classList.add("selected");
-  if (selectedAccessory === "bow") chipBow.classList.add("selected");
+  // 直接點配件：自動裝到第一個空座位（先左後右），不需要再點座位
+  const seatKey = !seatAssignments.left ? "left" : (!seatAssignments.right ? "right" : null);
+  if (!seatKey) return; // 兩個座位都裝好了，想換的話請先點座位卸下
+  seatAssignments[seatKey] = type;
+  renderSeat(seatKey === "left" ? seatLeft : seatRight);
   updateSeatHighlights();
+  checkComboComplete();
 }
 
 function handleSeatClick(seatEl) {
   const seatKey = seatEl.dataset.seat;
-  if (seatAssignments[seatKey]) {
-    // 已裝好：點一下卸下
-    seatAssignments[seatKey] = null;
-    renderSeat(seatEl);
-    comboBanner.classList.add("hidden");
-    updateSeatHighlights();
-    return;
-  }
-  if (!selectedAccessory) return; // 還沒選配件，點座位沒作用
-  seatAssignments[seatKey] = selectedAccessory;
+  if (!seatAssignments[seatKey]) return; // 空座位點了沒作用，請直接點上方配件
+  // 已裝好：點一下卸下
+  seatAssignments[seatKey] = null;
   renderSeat(seatEl);
-  selectedAccessory = null;
-  [chipCap, chipBow].forEach((chip) => chip.classList.remove("selected"));
+  comboBanner.classList.add("hidden");
   updateSeatHighlights();
-  checkComboComplete();
 }
 
 chipCap.addEventListener("click", () => handleChipClick("cap"));

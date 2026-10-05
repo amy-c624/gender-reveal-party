@@ -64,6 +64,14 @@
   </div>
 
   <div class="admin-card">
+    <h2>大家的祝福與猜測</h2>
+    <div id="guess-summary" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;"></div>
+    <button class="btn-primary save-btn" id="btn-refresh-guesses">重新整理名單</button>
+    <p class="status-msg" id="guesses-status"></p>
+    <div id="guess-list"></div>
+  </div>
+
+  <div class="admin-card">
     <h2>拍立得照片（選填）</h2>
     <p style="font-size:14px; color:var(--ink-soft); margin-bottom:14px;">
       感謝畫面角落會放一張「未來一家五口」的拍立得，圖框是橫式 16:9（建議照片尺寸 1920×1080），照片會依照比例完整縮放進框內、不會被裁切。這個網站沒有檔案上傳功能，請先把照片放進你的 GitHub repo（例如 assets 資料夾）或圖床，再把網址貼在這裡。沒有貼的話會顯示預設的插畫佔位圖案。
@@ -134,6 +142,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
-<script src="admin.js"></script>
+<script src="admin.js?v=21"></script>
 </body>
 </html>
