@@ -169,7 +169,9 @@ function applyVisualAssets() {
   if (VISUAL_ASSETS.polaroidUrl) {
     const photoEl = document.getElementById("corner-polaroid__photo");
     if (photoEl) {
-      photoEl.style.backgroundImage = `url(${VISUAL_ASSETS.polaroidUrl})`;
+      // 檔名含空白（例如「Untitled design.png」）時，沒加引號的 url() 會解析失敗，所以加引號並把空白轉成 %20
+      const safePolaroidUrl = String(VISUAL_ASSETS.polaroidUrl).trim().replace(/ /g, "%20").replace(/"/g, "%22");
+      photoEl.style.backgroundImage = `url("${safePolaroidUrl}")`;
       photoEl.style.backgroundSize = "contain";
       photoEl.style.backgroundRepeat = "no-repeat";
       photoEl.style.backgroundPosition = "center";
