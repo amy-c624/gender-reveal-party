@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>後台設定｜雙Q大冒險日記</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+  body{ background:var(--paper); }
+  .admin-wrap{ max-width:560px; margin:0 auto; padding:32px 16px 80px; position:relative; z-index:1; }
+  .admin-card{ background:#fff; padding:22px; margin-bottom:22px; border-radius:10px; box-shadow:var(--card-shadow); }
+  .admin-card h2{ font-family:var(--font-display); font-weight:700; font-size:17px; margin:0 0 16px; color:var(--gold-deep); }
+  .admin-row{ margin-bottom:14px; }
+  .admin-row label{ display:block; font-size:14px; color:var(--ink-soft); margin-bottom:4px; }
+  .admin-row input[type="text"], .admin-row input[type="number"], .admin-row textarea, .admin-row select{
+    width:100%; font-family:var(--font-body); font-size:16px; background:var(--paper);
+    color:var(--ink); border:2px solid var(--paper-deep); border-radius:8px; padding:10px;
+  }
+  .admin-row textarea{ min-height:60px; resize:vertical; }
+  .save-btn{ margin-top:6px; }
+  .status-msg{ font-size:14px; color:var(--sage); min-height:20px; margin-top:8px; }
+  .value-badge{ font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--ink-soft); display:inline-block; margin-bottom:6px; }
+  .gate{ max-width:360px; margin:20vh auto; text-align:center; padding:24px; position:relative; z-index:1; }
+  .asset-preview{ display:none; max-width:240px; max-height:140px; margin-top:8px; border:2px solid var(--paper-deep); border-radius:8px; background:#111; object-fit:contain; }
+  .asset-preview.show{ display:block; }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <p class="washi-label">後台入口</p>
+  <input class="paper-input" id="passcode" type="password" placeholder="輸入通關密語" />
+  <button class="btn-primary" id="btn-enter">進入後台</button>
+  <p class="status-msg" id="gate-msg"></p>
+</div>
+
+<div class="admin-wrap hidden" id="admin-panel">
+  <p class="washi-label">後台設定</p>
+  <h1 class="card-title" style="text-align:left;">雙Q大冒險日記後台</h1>
+
+  <div class="admin-card">
+    <h2>裝備組合名稱</h2>
+    <p style="font-size:14px; color:var(--ink-soft); margin-bottom:14px;">兩個座位都裝「棒球帽」＝BB、都裝「蝴蝶結」＝GG、一個各一種＝BG，這裡只能改顯示的名稱，組合判定邏輯不會變。</p>
+    <div id="combo-editor"></div>
+    <button class="btn-primary save-btn" id="btn-save-combo">儲存組合名稱</button>
+    <p class="status-msg" id="combo-status"></p>
+  </div>
+
+  <div class="admin-card">
+    <h2>公布正確答案</h2>
+    <div class="admin-row">
+      <label>目前設定</label>
+      <p id="current-answer" style="font-size:16px;">讀取中...</p>
+    </div>
+    <div class="admin-row">
+      <label>選擇答案</label>
+      <select id="answer-select"></select>
+    </div>
+    <button class="btn-primary save-btn" id="btn-save-answer">公布這個答案</button>
+    <p class="status-msg" id="answer-status"></p>
+  </div>
+
+  <div class="admin-card">
+    <h2>大家的祝福與猜測</h2>
+    <div id="guess-summary" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;"></div>
+    <button class="btn-primary save-btn" id="btn-refresh-guesses">重新整理名單</button>
+    <p class="status-msg" id="guesses-status"></p>
+    <div id="guess-list"></div>
+  </div>
+
+  <div class="admin-card">
+    <h2>拍立得照片（選填）</h2>
+    <p style="font-size:14px; color:var(--ink-soft); margin-bottom:14px;">
+      感謝畫面角落會放一張「未來一家五口」的拍立得，圖框是橫式 16:9（建議照片尺寸 1920×1080），照片會依照比例完整縮放進框內、不會被裁切。這個網站沒有檔案上傳功能，請先把照片放進你的 GitHub repo（例如 assets 資料夾）或圖床，再把網址貼在這裡。沒有貼的話會顯示預設的插畫佔位圖案。
+    </p>
+    <div class="admin-row">
+      <label>照片網址</label>
+      <input type="text" id="asset-polaroid" placeholder="assets/family-photo.jpg 或完整網址" />
+      <img id="preview-polaroid" class="asset-preview" />
+    </div>
+    <div class="admin-row">
+      <label>背景音樂網址（從第一次點擊開始播放，貫穿全部流程，玩家可自行點左上角圖示靜音）</label>
+      <input type="text" id="asset-bgm" placeholder="assets/bgm.mp3 或完整網址" />
+      <audio id="preview-bgm" class="asset-preview" controls style="width:100%; height:auto;"></audio>
+    </div>
+    <button class="btn-primary save-btn" id="btn-save-assets">儲存視覺素材</button>
+    <p class="status-msg" id="assets-status"></p>
+  </div>
+
+  <div class="admin-card">
+    <h2>版面位置微調</h2>
+    <p style="font-size:14px; color:var(--ink-soft); margin-bottom:14px;">
+      嬰兒車畫面的兩個座位是疊在 <code>stroller-bg.mp4</code> 影片上的，如果跟影片裡嬰兒車的實際座位對不齊，在這裡用百分比調整（數字是畫面寬 / 高的百分比位置，例如「左：40」代表在畫面左邊起算 40% 的地方）。存檔後重新整理首頁就能看到新位置。
+    </p>
+    <div class="admin-row">
+      <label>封面「翻開第一頁」按鈕垂直位置（px，正值往下移）</label>
+      <input type="number" id="layout-cover-btn" step="5" />
+    </div>
+    <div class="admin-row">
+      <label>封面主標題文字位置：左右 / 上下（px，正值為往右／往下移）</label>
+      <div style="display:flex; gap:10px;">
+        <input type="number" id="layout-title-offset-x" step="2" style="flex:1;" />
+        <input type="number" id="layout-title-offset-y" step="2" style="flex:1;" />
+      </div>
+    </div>
+    <div class="admin-row">
+      <label>劇情影片左右對齊（%，預設 50＝置中；影片在手機上左右會被裁掉一點點，字幕看起來偏右就調小、偏左就調大，建議每次調 2～3）</label>
+      <input type="number" id="layout-story-video-pos-x" step="1" min="0" max="100" />
+    </div>
+    <div class="admin-row">
+      <label>左座位置：上 / 左（%）</label>
+      <div style="display:flex; gap:10px;">
+        <input type="number" id="layout-seat-left-top" step="1" min="0" max="100" style="flex:1;" />
+        <input type="number" id="layout-seat-left-left" step="1" min="0" max="100" style="flex:1;" />
+      </div>
+    </div>
+    <div class="admin-row">
+      <label>右座位置：上 / 左（%）</label>
+      <div style="display:flex; gap:10px;">
+        <input type="number" id="layout-seat-right-top" step="1" min="0" max="100" style="flex:1;" />
+        <input type="number" id="layout-seat-right-left" step="1" min="0" max="100" style="flex:1;" />
+      </div>
+    </div>
+    <div class="admin-row">
+      <label>場景轉場秒數（切換畫面時黑畫面淡出/淡入各自的秒數，例如 0.4）</label>
+      <input type="number" id="layout-transition-seconds" step="0.1" min="0" max="3" />
+    </div>
+    <button class="btn-primary save-btn" id="btn-save-layout">儲存版面位置</button>
+    <p class="status-msg" id="layout-status"></p>
+  </div>
+
+  <div class="admin-card">
+    <h2>文字內容編輯</h2>
+    <p style="font-size:14px; color:var(--ink-soft); margin-bottom:14px;">網站上所有的固定文字（標題、按鈕、提示語）都可以在這裡修改。</p>
+    <div id="uitext-editor"></div>
+    <button class="btn-primary save-btn" id="btn-save-uitext">儲存文字設定</button>
+    <p class="status-msg" id="uitext-status"></p>
+  </div>
+
+  <a href="index.html" class="text-link" style="display:inline-block;">← 回到遊戲首頁</a>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="admin.js?v=21"></script>
+</body>
+</html>
