@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
 <title>雙Q大冒險日記</title>
 <meta name="description" content="一起翻開這本迎接雙胞胎的手帳，跟著線索猜猜看寶寶的性別！" />
 
@@ -10,11 +10,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Caveat:wght@600;700&family=DotGothic16&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="style.css?v=19" />
 </head>
 <body class="has-frame">
 
-<div id="phone-frame">
+<div id="phone-frame" class="config-loading">
 <audio id="bgm-audio" loop preload="auto"></audio>
 <button class="bgm-toggle" id="btn-bgm-toggle" aria-label="背景音樂開關" title="背景音樂開關">🔈</button>
 <div class="transition-veil" id="transition-veil" aria-hidden="true"></div>
@@ -163,6 +163,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
-<script src="script.js"></script>
+<script src="script.js?v=19"></script>
 </body>
 </html>
